@@ -139,7 +139,7 @@ def fetch_yahoo_data(dir="yahoo_scrapes/2024", start=START_DATE, end=END_DATE):
 
 def parse_yahoo_data(json_data, filename=''):
     """
-    takes json data from a single game and parses it with the rules in scrape_data.RULES.
+    takes json data from a single game and parses it with the rules in scrape_rules.RULES.
 
     it returns None for postponed/non-completed games, and games with unrecognized teams (all star games)
     """
