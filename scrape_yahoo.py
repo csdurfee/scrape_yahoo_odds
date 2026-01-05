@@ -180,11 +180,33 @@ def make_dataframe(json_filenames):
 
     return pd.concat(dataframes)
 
+def numericize(df):
+    """
+    Converts columns that should be numeric/boolean
+    """
+    points = df.columns[df.columns.str.contains('points')]
+    percentages = df.columns[df.columns.str.contains('percentage')]
+    to_numeric = list(points) + list(percentages)
+    df[to_numeric] = df[to_numeric].apply(pd.to_numeric)
+
+    # this is a wacky thing with pandas I just discovered
+    # if a Series is an object datatype but contains boolean values,
+    # eldritch horrors emerge if you do a ~ on it, 
+    # eg ~(pd.Series([True, False, True, False]).astype(object))
+    to_bools = df.columns[df.columns.str.contains('won')]
+    for col in to_bools:
+        df[col] = df[col].astype(bool)
+
+    return df
+
 def add_spread_columns(df):
     """
     adds additional columns related to betting against the spread
     from calculated results not in the original yahoo API
     """
+    ## convert fields that need to be numeric
+    df = numericize(df)
+
     ## parse the date as actual datetime
     df['game_date'] = pd.to_datetime(df['game_date'])
 
@@ -209,7 +231,7 @@ def add_spread_columns(df):
 
     ## which team got more bets placed on them, HOME or AWAY?
     df['spread_most_popular'] = None
-    df.loc[df.spread_away_wager_percentage > 50, 'spread_most_popular'] = 'AWAY'
+    df.loc[df.spread_away_wager_percentage >= 50, 'spread_most_popular'] = 'AWAY'
     df.loc[df.spread_away_wager_percentage < 50, 'spread_most_popular'] = 'HOME'
 
     ## did the most popular team (by wager percentage) win against the spread?
@@ -219,6 +241,20 @@ def add_spread_columns(df):
     ## when was the underdog against the spread the most popular team with bettors?
     df['spread_popular_underdog'] = False
     df.loc[df.spread_most_popular == df.spread_dog, 'spread_popular_underdog'] = True
+
+    ## sometimes wager_percentage and stake_percentage are significantly different.
+    ## might as well do the above for stake as well.
+    df['spread_stake_popular'] = None
+    df.loc[df.spread_away_stake_percentage >= 50, 'spread_stake_popular'] = 'AWAY'
+    df.loc[df.spread_away_stake_percentage < 50, 'spread_stake_popular'] = 'HOME'
+
+    ## did the most popular team (by wager percentage) win against the spread?
+    df['spread_stake_won'] = False
+    df.loc[df.spread_stake_popular == df.spread_winner, 'spread_stake_won'] = True
+
+    ## when was the underdog against the spread the most popular team with bettors?
+    df['spread_stake_underdog'] = False
+    df.loc[df.spread_stake_popular == df.spread_dog, 'spread_stake_underdog'] = True
 
     ## add team names for various conditions
 
@@ -253,14 +289,85 @@ def add_spread_columns(df):
 
     # popular teams by name
     df['spread_popular_team_name'] = None
-
     popular_home = (df.spread_most_popular == "HOME")
 
     df.loc[popular_home, 'spread_popular_team_name'] = df.loc[popular_home, 'home_team']
     df.loc[~popular_home, 'spread_popular_team_name'] = df.loc[~popular_home, 'away_team']
 
+    return df
+
+def convert_line(line):
+    """
+    convert American style money line to the implied probability
+
+    -400 implies you will win 4 out of 5 bets
+    >>> convert_line(-400)
+    0.8
+    """
+    if line < 0:
+        return abs(line)/(abs(line)+100)
+    else:
+        return 100/(100+line)
+    
+def payout(line):
+    """
+    calculates amount of profit from taking an American style money line (risking $100)
+    
+    the 2 times you win a -200 bet covers the 1 time you lose it, so payout should be $50.0
+    >>> payout(-200)
+    50.0
+
+    a +300 bet should payout $300
+    >>> payout(300)
+    300.0
+    """
+    return (100/convert_line(line)) - 100
+
+def add_money_columns(df):
+    """
+    adds more data about money line bets. 
+
+
+    """
+    # drop any games that are ties or don't have money line wager percentage data.
+    df = df.dropna(subset=['money_home_won', 'money_home_odds', 'money_away_odds',
+                            'money_home_wager_percentage'])
+    
+    # money line fields
+    # was home or away more popular with gamblers?
+    df['money_popular'] = None
+    df.loc[df.money_home_wager_percentage > 50, 'money_popular'] = 'HOME'
+    df.loc[df.money_home_wager_percentage <= 50, 'money_popular'] = 'AWAY'
+
+    # did the popular side of the money line bet win?
+    df['money_popular_won'] = False
+    df.loc[(df.money_popular == 'HOME') & (df.money_home_won), 'money_popular_won'] = True
+    df.loc[(df.money_popular == 'AWAY') & (df.money_away_won), 'money_popular_won'] = True
+
+    # did the public back the favorite or the dog on the money line?
+    df['money_fave_dog'] = 'DOG'
+    # the public backed a home favorite
+    df.loc[(df.money_popular == 'HOME') & (df.money_home_odds < 0), 'money_fave_dog'] = 'FAVE'
+    # the public backed an away favorite
+    df.loc[(df.money_popular == 'AWAY') & (df.money_away_odds < 0), 'money_fave_dog'] = 'FAVE'
+
+    # what were the odds taken by the more popular side?
+    df['money_popular_odds']  = None
+    df.loc[(df.money_popular == 'HOME'), 'money_popular_odds'] = df.loc[(df.money_popular == 'HOME'), 'money_home_odds']
+    df.loc[(df.money_popular == 'AWAY'), 'money_popular_odds'] = df.loc[(df.money_popular == 'AWAY'), 'money_away_odds']
+
+    # what is the overround (profit margin for sportsbook)?
+    df['money_overround'] = df.money_away_odds.map(convert_line) + df.money_home_odds.map(convert_line)
+
+    # what would be the payout on a $100 bet, if it won?
+    df['money_away_payout'] = df.money_away_odds.map(payout)
+    df['money_home_payout'] = df.money_home_odds.map(payout)
+
+    # the payout on the popular side
+    df['money_popular_payout'] = df.money_popular_odds.map(payout)
 
     return df
+
 
 def load_summary_csv():
     dataframes = []
@@ -292,19 +399,4 @@ if __name__ == '__main__':
             df = make_dataframe(filenames)
 
             df.to_csv(f"{base_dir}/odds.csv")
-            print(f"took {time.time() - _start}")# about 2 seconds per game
-
-
-    ### issues
-    # yahoo/2021\nba.g.2021121404.json failed on $.data.games.[0].gameOddsSummary.pregameOddsDisplay
-    # \nba.g.2022032917
-    # /2021\nba.g.2022032912.json
-    # nba.g.2021122322.json
-    # yahoo/2021\nba.g.2021122117.json 
-    # 2022\nba.g.2023031925.json
-    # nba.g.2023031818.
-    # nba.g.2023021932.json
-    # nba.g.2023020218.json
-    # nba.g.2023020207.json 
-    # nba.g.2023020218.json 
-    # nba.g.2024011909.json
+            print(f"took {time.time() - _start}")# in practice, about 2 seconds per game
