@@ -1,4 +1,3 @@
-
 THE_GAME = '$.data.games[0]'
 
 OVER_UNDER = THE_GAME + '.gameLineSixPack[?type = "OVER_UNDER" & period = "FULL_GAME" & eventState = "PREGAME"]'
