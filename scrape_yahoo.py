@@ -121,8 +121,6 @@ class ScrapeYahoo:
     def parse_yahoo_data(self, json_data, filename='', parsed_rules=None):
         """
         takes json data from a single game and parses it
-
-        it returns None for postponed/non-completed games, otherwise JSON
         """
         row = {}
         if not parsed_rules:
@@ -195,25 +193,9 @@ class ScrapeYahoo:
     def get_all_data(self):
         dataframes = []
         for year in self.SEASONS.keys():
-            # fixme: hardcoded filename here
-            # the classes need a base path
             filenames = self.get_cached_filenames(f"nfl_scrapes/{year}")
             df = self.make_dataframe(filenames)
             df['season'] = year
             dataframes.append(df)
 
         return pd.concat(dataframes)
-
-
-# fixme: put scripts to fetch/rebuild in their own file
-# if __name__ == '__main__':
-#     SCRAPE_PAGES = False
-#     REBUILD_SUMMARY_CSV = False
-
-#     scraper = ScrapeYahoo()
-
-#     if SCRAPE_PAGES:
-#         scraper.scrape_pages()
-
-#     if REBUILD_SUMMARY_CSV:        
-#         scraper.rebuild_summary_csv()

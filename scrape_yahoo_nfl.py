@@ -33,8 +33,8 @@ class ScrapeYahooNFL(ScrapeYahoo):
         NFL version
 
         fetches all data from `start` to `end` and saves them as JSON in the `dir` directory.
-
-        TODO: need to refactor this
+        unlike the NBA version, it doesn't need to crawl every daily page because there is a 
+        page for each week in the season.
         """
         for week in range(1, 19):
             yahoo_ids = self.get_yahoo_ids_for_date(week, year)

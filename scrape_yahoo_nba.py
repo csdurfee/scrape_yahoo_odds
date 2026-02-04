@@ -35,21 +35,21 @@ class ScrapeYahooNBA(ScrapeYahoo):
         'Washington'
     }
 
-    def parse_yahoo_data(self, json_data, filename=''):
+    def parse_yahoo_data(self, json_data, filename='', parsed_rules=None):
         """
         takes json data from a single game and parses it with the rules in scrape_rules.RULES.
 
         it returns None for postponed/non-completed games, and games with unrecognized teams (all star games)
         """
         row = {}
-        for k,v in scrape_rules.RULES.items():
-            jsonpath_expression = parse(v)
+        for k, jsonpath_expression in parsed_rules.items():
             try:
                 results = [item.value for item in jsonpath_expression.find(json_data)][0]
                 row[k] = results
             except:
                 print(f"file: {filename} failed on {jsonpath_expression}")
 
+        # need to filter out all-star games and other nonsense
         if row['home_team'] not in self.TEAMS:
             print(f"skipping game between {row['home_team']} and {row['away_team']}")
             return None
