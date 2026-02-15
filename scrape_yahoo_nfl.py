@@ -9,6 +9,8 @@ class ScrapeYahooNFL(ScrapeYahoo):
         '2025': None
     }
 
+    BASE_DIR = "nfl_scrapes"
+
 
     def make_date_url(week, year):
         return f"https://sports.yahoo.com/nfl/scoreboard/?confId=&dateRange={week}&schedState=2&scoreboardSeason={year}"

@@ -1,5 +1,5 @@
 """
-Scrapes NBA betting line data from Yahoo's internal API.
+Scrapes betting line data from Yahoo's internal API.
 
 This fetches all NBA games from the 2021-22 thru 2024-25 seasons (all the data Yahoo has)
 By default, this contains all regular season and playoff games, and the Emirates NBA Cup
@@ -22,30 +22,36 @@ import cloudscraper
 # cloudscraper can get around some basic anti-bot detection vs using requests library.
 # I didn't encounter any errors or rate limiting when scraping the data at a very slow rate, though,
 # so this may be an unneeded dependency.
-#
-# I did encounter problems using playwright to scrape yahoo (the first request 
-# would go through fine, subsequent ones would time out) but was able to figure out
-# how to get the data without a headless browser by using the backend url in `make_json_yahoo_url`
 
 from jsonpath_ng.ext import parse
 
 import scrape_rules
 
-
 class ScrapeYahoo:
+    """
+    Scrapes game-level betting data from yahoo. This was originally developed to scrape NBA scores,
+    before being extended to the NFL in the `scrape_yahoo_nfl` class.
+    
+    """
+
     START_DATE = datetime.datetime(2024, 10, 22) # start of 2024-25 regular season
     END_DATE = datetime.datetime(2025, 4, 13) # end of 2024-25 regular season
 
+    # It's necessary to define the seasons so we don't pick up preseason games.
+    # these date ranges do include playoff games.
     SEASONS = {
         '2021': (datetime.datetime(2021, 10, 19), datetime.datetime(2022, 6, 16)),
         '2022': (datetime.datetime(2022, 10, 18), datetime.datetime(2023, 6, 12)),
         '2023': (datetime.datetime(2023, 10, 24), datetime.datetime(2024, 6, 17)),
         '2024': (datetime.datetime(2024, 10, 22), datetime.datetime(2025, 6, 22)),
+        '2025': (datetime.datetime(2025, 10, 21), datetime.datetime(2026, 2, 12)), # up to all star break
     }
+
+    BASE_DIR = "nba_scrapes"
 
     def __init__(self):
         self.scraper = cloudscraper.create_scraper()
-        self.cache_dir = 'yahoo_scrapes/2024'
+        self.cache_dir = 'nba_scrapes/2024'
 
     def make_yahoo_json_url(self, game_id):
         return f"https://sports.yahoo.com/site/api/resource/sports.graphite.gameOdds;dataType=graphite;endpoint=graphite;gameIds={game_id}"
@@ -60,7 +66,9 @@ class ScrapeYahoo:
         """
         This is the URL for the Yahoo page that shows all NBA scores for a particular date.
         """
-        return f"https://sports.yahoo.com/nba/scoreboard/?confId=&dateRange={yyyy_mm_dd}"
+        #return f"https://sports.yahoo.com/nba/scoreboard/?date={yyyy_mm_dd}"
+        return f"https://graphite.sports.yahoo.com/v1/query/shangrila/leagueGameIdsByDate?startRange={yyyy_mm_dd}&endRange={yyyy_mm_dd}&leagues=nba"
+
 
     def get_yahoo_ids_for_date(self, nice_date):
         """
@@ -72,7 +80,7 @@ class ScrapeYahoo:
         game_ids = set(re.findall(r"nba\.g\.202[\d]+", date_html))
         return game_ids
 
-    def fetch_yahoo_data(self, dir="yahoo_scrapes/2024", start=START_DATE, end=END_DATE):
+    def fetch_yahoo_data(self, fetch_dir="nba_scrapes/2024", start=START_DATE, end=END_DATE):
         """
         fetches all data from `start` to `end` and saves them as JSON in the `dir` directory.
         """
@@ -86,7 +94,7 @@ class ScrapeYahoo:
             
             # for each game id, fetch and save the game data if we don't already have it
             for yahoo_game_id in yahoo_ids:
-                cache_path = f"{dir}/{yahoo_game_id}.json"
+                cache_path = f"{fetch_dir}/{yahoo_game_id}.json"
                 if not os.path.exists(cache_path):
                     game_url = self.make_yahoo_json_url(yahoo_game_id)
                     #print(f"fetching url {game_url}")
@@ -120,7 +128,7 @@ class ScrapeYahoo:
 
     def parse_yahoo_data(self, json_data, filename='', parsed_rules=None):
         """
-        takes json data from a single game and parses it
+        takes json data from a single game and parses it.
         """
         row = {}
         if not parsed_rules:
@@ -161,13 +169,15 @@ class ScrapeYahoo:
     def load_summary_csv(self):
         dataframes = []
         for year in self.SEASONS.keys():
-            df = pd.read_csv(f"yahoo_scrapes/{year}/odds.csv")
+            df = pd.read_csv(f"{self.BASE_DIR}/csv/{year}_odds.csv")
             dataframes.append(df.set_index('game_id'))
-        return pd.concat(dataframes)
+        joined = pd.concat(dataframes)
+        joined.drop('Unnamed: 0', axis=1, inplace=True)
+        return joined
 
     def scrape_pages(self):
         for (season_name, season_range) in self.SEASONS.items():
-            base_dir = f"yahoo_scrapes/{season_name}"
+            base_dir = f"{self.BASE_DIR}/{season_name}"
             self.fetch_yahoo_data(base_dir, season_range[0], season_range[1])      
 
 
@@ -175,25 +185,28 @@ class ScrapeYahoo:
         """
         Re-generate data year by year, and save each year as a CSV file.
         """
-        all_years = []
+        all_seasons = []
         for year in self.SEASONS.keys():
             print(f"doing {year}")
             _start = time.time()
 
-            base_dir = f"yahoo_scrapes/{year}"
+            year_dir = f"{self.BASE_DIR}/{year}"
 
-            filenames = self.get_cached_filenames(base_dir)
+            filenames = self.get_cached_filenames(year_dir)
             df = self.make_dataframe(filenames)
-            df.to_csv(f"{base_dir}/odds.csv")
-
-            all_years.append(df.copy())
+            df.to_csv(f"{self.BASE_DIR}/csv/{year}_odds.csv")
 
             print(f"took {time.time() - _start}")# in practice, about 2 seconds per game
+
+            all_seasons.append(df)
+
+        all_seasons_df = pd.concat(all_seasons)
+        all_seasons_df.to_csv(f"{self.BASE_DIR}/csv/all_odds.csv")
 
     def get_all_data(self):
         dataframes = []
         for year in self.SEASONS.keys():
-            filenames = self.get_cached_filenames(f"nfl_scrapes/{year}")
+            filenames = self.get_cached_filenames(f"{self.BASE_DIR}/{year}")
             df = self.make_dataframe(filenames)
             df['season'] = year
             dataframes.append(df)
