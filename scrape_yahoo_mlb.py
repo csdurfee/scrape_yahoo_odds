@@ -20,8 +20,8 @@ class ScrapeYahooMLB(ScrapeYahoo):
     
 
 if __name__ == '__main__':
-    # TODO: this is hacky, remove
-    START_CHUNK =  datetime.datetime(2026, 5, 16)
+    # hacky manual fetching
+    START_CHUNK =  datetime.datetime(2026, 3, 25)
     END_CHUNK = datetime.datetime(2026, 6, 12)
 
     scraper = ScrapeYahooMLB()
