@@ -48,6 +48,7 @@ class ScrapeYahoo:
     }
 
     BASE_DIR = "nba_scrapes"
+    LEAGUE = "nba"
 
     def __init__(self):
         self.scraper = cloudscraper.create_scraper()
@@ -67,7 +68,7 @@ class ScrapeYahoo:
         This is the URL for the Yahoo page that shows all NBA scores for a particular date.
         """
         #return f"https://sports.yahoo.com/nba/scoreboard/?date={yyyy_mm_dd}"
-        return f"https://graphite.sports.yahoo.com/v1/query/shangrila/leagueGameIdsByDate?startRange={yyyy_mm_dd}&endRange={yyyy_mm_dd}&leagues=nba"
+        return f"https://graphite.sports.yahoo.com/v1/query/shangrila/leagueGameIdsByDate?startRange={yyyy_mm_dd}&endRange={yyyy_mm_dd}&leagues={self.LEAGUE}"
 
 
     def get_yahoo_ids_for_date(self, nice_date):
