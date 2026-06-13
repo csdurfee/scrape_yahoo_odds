@@ -51,15 +51,30 @@ class ScrapeYahoo:
     LEAGUE = "nba"
 
     def __init__(self):
-        self.scraper = cloudscraper.create_scraper()
         self.cache_dir = 'nba_scrapes/2024'
+
+    def get_scraper(self):
+        """
+        Re-instantiating the scraper will change the user-agent which may help avoid blocking
+
+        I may need to add stuff like this:
+
+        enable_stealth=True,
+            stealth_options={
+                'min_delay': 2.0,
+                'max_delay': 6.0,
+                'human_like_delays': True,
+                'randomize_headers': True,
+                'browser_quirks': True
+            },
+        """
+        return cloudscraper.create_scraper()
 
     def make_yahoo_json_url(self, game_id):
         return f"https://sports.yahoo.com/site/api/resource/sports.graphite.gameOdds;dataType=graphite;endpoint=graphite;gameIds={game_id}"
 
     def get_some_json(self, url):
-        scraper = cloudscraper.create_scraper()
-        some_html = scraper.get(url).text
+        some_html = self.get_scraper().get(url).text
         parsed = json.loads(some_html)
         return parsed
 
@@ -77,7 +92,7 @@ class ScrapeYahoo:
         YYYY-MM-DD format for date.
         """
         date_url = self.make_date_url(nice_date)
-        date_html = self.scraper.get(date_url).text
+        date_html = self.get_scraper().get(date_url).text
         game_ids = set(re.findall(r"nba\.g\.202[\d]+", date_html))
         return game_ids
 
