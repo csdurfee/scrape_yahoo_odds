@@ -2,11 +2,9 @@ import json
 import pytest
 from scrape_yahoo_mlb import ScrapeYahooMLB
 
-
 @pytest.fixture
 def scraper():
     return ScrapeYahooMLB()
-
 
 @pytest.fixture
 def fixture1():
@@ -14,7 +12,7 @@ def fixture1():
         return json.load(f)
 
 
-def test_money_and_spread_teams_different_order(scraper, fixture1):
+def test_massage_yahoo_data(scraper, fixture1):
     # fixture1 has money and spread teams in different order
     parsed = scraper.parse_yahoo_data(fixture1)
     massaged = scraper.massage_yahoo_data(parsed, drop=False)

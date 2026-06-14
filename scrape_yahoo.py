@@ -177,26 +177,21 @@ class ScrapeYahoo:
         drop controls whether the `*_one_*` and `*_two_*` keys should be deleted.
         """
         for bet_type in ["money", "spread"]:
-            if data[f"{bet_type}_one_team_id"] == data['home_team_id']:
-                truth = dict(one='home', two='away')
-            elif data[f"{bet_type}_one_team_id"] == data['away_team_id']:
-                truth = dict(one='away', two='home')
-            else:
-                raise Exception("MASSAGE ERROR")
+            if f"{bet_type}_one_team_id" in data:
+                if data[f"{bet_type}_one_team_id"] == data['home_team_id']:
+                    truth = dict(one='home', two='away')
+                elif data[f"{bet_type}_one_team_id"] == data['away_team_id']:
+                    truth = dict(one='away', two='home')
+                else:
+                    raise Exception("MASSAGE ERROR")
 
-            old_one_keys = [k for k in data.keys() if k.startswith(f"{bet_type}_one")]
-            mapping = {(k, k.replace(f"{bet_type}_one", f"{bet_type}_{ truth['one'] }")) for k in old_one_keys}
-            for (old_key, new_key) in mapping:
-                data[new_key] = data[old_key]
-                if drop:
-                    del data[old_key]
-
-            old_two_keys = [k for k in data.keys() if k.startswith(f"{bet_type}_two")]
-            mapping = {(k, k.replace(f"{bet_type}_two", f"{bet_type}_{ truth['two'] }")) for k in old_two_keys}
-            for (old_key, new_key) in mapping:
-                data[new_key] = data[old_key]
-                if drop:
-                    del data[old_key]
+                for cardinal in ["one", "two"]:
+                    old_keys = [k for k in data.keys() if k.startswith(f"{bet_type}_{cardinal}")]
+                    mapping = {(k, k.replace(f"{bet_type}_{cardinal}", f"{bet_type}_{ truth[cardinal] }")) for k in old_keys}
+                    for (old_key, new_key) in mapping:
+                        data[new_key] = data[old_key]
+                        if drop:
+                            del data[old_key]
 
         return data
 
