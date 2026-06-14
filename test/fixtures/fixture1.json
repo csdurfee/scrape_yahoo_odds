@@ -1,0 +1,237 @@
+{
+    "data": {
+        "games": [
+            {
+                "gameId": "mlb.g.460610128",
+                "status": "FINAL",
+                "startDate": "2026-06-10-10:00",
+                "startTime": "2026-06-10T12:40:00-10:00",
+                "gameOddsSummary": {
+                    "pregameOddsDisplay": "-113, O/U 8.5",
+                    "favoriteId": "mlb.t.28",
+                    "underdogTeamPredictedScore": null,
+                    "favoriteTeamPredictedScore": null
+                },
+                "playoffSeries": null,
+                "league": {
+                    "shortName": "MLB"
+                },
+                "awayTeam": {
+                    "teamId": "mlb.t.29",
+                    "abbreviation": "ARI",
+                    "displayName": "Arizona",
+                    "nickname": "Diamondbacks",
+                    "location": "Arizona",
+                    "primaryColor": "a71930",
+                    "secondaryColor": "00c2cf",
+                    "teamLogo": {
+                        "url": "https://s.yimg.com/iu/api/res/1.2/sqjSd1IQD4PTJTk3ZV_Fzw--~B/YXBwaWQ9c2hhcmVkO2ZpPWZpbGw7cT03NTtoPTYwO3c9NjA-/https://s.yimg.com/cv/apiv2/default/20250415/500px/arizona_wbg.png"
+                    }
+                },
+                "homeTeam": {
+                    "teamId": "mlb.t.28",
+                    "abbreviation": "MIA",
+                    "displayName": "Miami",
+                    "nickname": "Marlins",
+                    "location": "Miami",
+                    "primaryColor": "00a3e0",
+                    "secondaryColor": "ef3340",
+                    "teamLogo": {
+                        "url": "https://s.yimg.com/iu/api/res/1.2/Tq0rYozy6DMyduvyU0wJ9w--~B/YXBwaWQ9c2hhcmVkO2ZpPWZpbGw7cT03NTtoPTYwO3c9NjA-/https://s.yimg.com/cv/apiv2/default/mlb/20190319/500x500/marlins_wbgs.png"
+                    }
+                },
+                "activePropBets": [],
+                "closedPropBets": [],
+                "gameLineSixPack": [
+                    {
+                        "id": 253428828,
+                        "name": "winner (incl. extra innings)",
+                        "status": "CLOSED",
+                        "type": "MONEY_LINE",
+                        "period": "FULL_GAME",
+                        "eventState": "PREGAME",
+                        "baseCategory": "MONEY_LINE",
+                        "options": [
+                            {
+                                "id": 777023473,
+                                "name": "Diamondbacks",
+                                "americanOdds": -117,
+                                "decimalOdds": null,
+                                "shortName": "-117",
+                                "displayName": "-117",
+                                "status": "CLOSED",
+                                "teamIds": [
+                                    "mlb.t.29"
+                                ],
+                                "isCorrect": false,
+                                "optionDetails": [],
+                                "stakePercentage": "67.88",
+                                "wagerPercentage": "56.07"
+                            },
+                            {
+                                "id": 777023474,
+                                "name": "Marlins",
+                                "americanOdds": -102,
+                                "decimalOdds": null,
+                                "shortName": "-102",
+                                "displayName": "-102",
+                                "status": "CLOSED",
+                                "teamIds": [
+                                    "mlb.t.28"
+                                ],
+                                "isCorrect": true,
+                                "optionDetails": [],
+                                "stakePercentage": "32.12",
+                                "wagerPercentage": "43.93"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 253428829,
+                        "name": "handicap (incl. extra innings)",
+                        "status": "CLOSED",
+                        "type": "SPREAD",
+                        "period": "FULL_GAME",
+                        "eventState": "PREGAME",
+                        "baseCategory": "SPREAD",
+                        "options": [
+                            {
+                                "id": 777023475,
+                                "name": "Marlins +1.5",
+                                "americanOdds": -171,
+                                "decimalOdds": null,
+                                "shortName": "+1.5",
+                                "displayName": "+1.5",
+                                "status": "CLOSED",
+                                "teamIds": [
+                                    "mlb.t.28"
+                                ],
+                                "isCorrect": true,
+                                "optionDetails": [
+                                    {
+                                        "key": "points",
+                                        "value": "1.5"
+                                    }
+                                ],
+                                "stakePercentage": null,
+                                "wagerPercentage": null
+                            },
+                            {
+                                "id": 777023476,
+                                "name": "Diamondbacks -1.5",
+                                "americanOdds": 141,
+                                "decimalOdds": null,
+                                "shortName": "-1.5",
+                                "displayName": "-1.5",
+                                "status": "CLOSED",
+                                "teamIds": [
+                                    "mlb.t.29"
+                                ],
+                                "isCorrect": false,
+                                "optionDetails": [
+                                    {
+                                        "key": "points",
+                                        "value": "-1.5"
+                                    }
+                                ],
+                                "stakePercentage": null,
+                                "wagerPercentage": null
+                            }
+                        ]
+                    },
+                    {
+                        "id": 253428830,
+                        "name": "total (incl. extra innings)",
+                        "status": "CLOSED",
+                        "type": "OVER_UNDER",
+                        "period": "FULL_GAME",
+                        "eventState": "PREGAME",
+                        "baseCategory": "TOTALS",
+                        "options": [
+                            {
+                                "id": 777023477,
+                                "name": "Under 8.5",
+                                "americanOdds": -108,
+                                "decimalOdds": null,
+                                "shortName": "U 8.5",
+                                "displayName": "U 8.5",
+                                "status": "CLOSED",
+                                "teamIds": [],
+                                "isCorrect": true,
+                                "optionDetails": [
+                                    {
+                                        "key": "under",
+                                        "value": "8.5"
+                                    }
+                                ],
+                                "stakePercentage": "4.36",
+                                "wagerPercentage": "5.34"
+                            },
+                            {
+                                "id": 777023478,
+                                "name": "Over 8.5",
+                                "americanOdds": -112,
+                                "decimalOdds": null,
+                                "shortName": "O 8.5",
+                                "displayName": "O 8.5",
+                                "status": "CLOSED",
+                                "teamIds": [],
+                                "isCorrect": false,
+                                "optionDetails": [
+                                    {
+                                        "key": "over",
+                                        "value": "8.5"
+                                    }
+                                ],
+                                "stakePercentage": "95.64",
+                                "wagerPercentage": "94.66"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 253517902,
+                        "name": "moneyline_live",
+                        "status": "CLOSED",
+                        "type": "MONEY_LINE",
+                        "period": "FULL_GAME",
+                        "eventState": "LIVE",
+                        "baseCategory": "MONEY_LINE",
+                        "options": []
+                    },
+                    {
+                        "id": 253517903,
+                        "name": "spread_live",
+                        "status": "CLOSED",
+                        "type": "SPREAD",
+                        "period": "FULL_GAME",
+                        "eventState": "LIVE",
+                        "baseCategory": "SPREAD",
+                        "options": []
+                    },
+                    {
+                        "id": 253517904,
+                        "name": "total_live",
+                        "status": "CLOSED",
+                        "type": "OVER_UNDER",
+                        "period": "FULL_GAME",
+                        "eventState": "LIVE",
+                        "baseCategory": "TOTALS",
+                        "options": []
+                    }
+                ],
+                "firstQuarterSixPack": [],
+                "secondQuarterSixPack": [],
+                "thirdQuarterSixPack": [],
+                "fourthQuarterSixPack": [],
+                "firstHalfSixPack": [],
+                "secondHalfSixPack": [],
+                "firstPeriodSixPack": [],
+                "secondPeriodSixPack": [],
+                "thirdPeriodSixPack": [],
+                "fiveInningsSixPack": [],
+                "gameNotes": []
+            }
+        ]
+    },
+    "extensions": {}
+}
