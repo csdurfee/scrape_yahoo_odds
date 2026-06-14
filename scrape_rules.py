@@ -5,12 +5,12 @@ OVER_INFO = OVER_UNDER + '.options[0]'
 UNDER_INFO = OVER_UNDER + '.options[1]'
 
 MONEY_LINE = THE_GAME + '.gameLineSixPack[?type = "MONEY_LINE" & period = "FULL_GAME" & eventState = "PREGAME"]'
-MONEY_AWAY_INFO = MONEY_LINE + '.options[0]'
-MONEY_HOME_INFO = MONEY_LINE + '.options[1]'
+MONEY_ONE_INFO= MONEY_LINE + '.options[0]'
+MONEY_TWO_INFO = MONEY_LINE + '.options[1]'
 
 SPREAD = THE_GAME + '.gameLineSixPack[?type = "SPREAD" & period = "FULL_GAME" & eventState = "PREGAME"]'
-SPREAD_AWAY_INFO = SPREAD + '.options[0]'
-SPREAD_HOME_INFO = SPREAD + '.options[1]'
+SPREAD_ONE_INFO = SPREAD + '.options[0]'
+SPREAD_TWO_INFO = SPREAD + '.options[1]'
 
 RULES = {
     'game_id': THE_GAME + '.gameId',
@@ -18,6 +18,9 @@ RULES = {
 
     'away_team': THE_GAME + '.awayTeam.displayName',
     'home_team': THE_GAME + '.homeTeam.displayName',
+
+    'away_team_id': THE_GAME + '.awayTeam.teamId',
+    'home_team_id': THE_GAME + '.homeTeam.teamId',
 
     # this contains both spread and total info.
     # I believe this is the opening line, but haven't verified that
@@ -38,32 +41,35 @@ RULES = {
     'total_under_decimal_odds': UNDER_INFO + '.decimalOdds',
     'total_under_won': UNDER_INFO + '.isCorrect',
 
-
     # money line data
-    'money_away_odds': MONEY_AWAY_INFO + '.americanOdds',
-    'money_away_decimal_odds': MONEY_AWAY_INFO + '.decimalOdds',
-    'money_away_stake_percentage': MONEY_AWAY_INFO + '.stakePercentage',
-    'money_away_wager_percentage': MONEY_AWAY_INFO + '.wagerPercentage',
-    'money_away_won': MONEY_AWAY_INFO + '.isCorrect',
+    'money_one_odds': MONEY_ONE_INFO + '.americanOdds',
+    'money_one_decimal_odds': MONEY_ONE_INFO + '.decimalOdds',
+    'money_one_stake_percentage': MONEY_ONE_INFO + '.stakePercentage',
+    'money_one_wager_percentage': MONEY_ONE_INFO + '.wagerPercentage',
+    'money_one_won': MONEY_ONE_INFO + '.isCorrect',
+    'money_one_team_id': MONEY_ONE_INFO + '.teamIds[0]',
 
-    'money_home_odds': MONEY_HOME_INFO + '.americanOdds',
-    'money_home_decimal_odds': MONEY_HOME_INFO + '.decimalOdds',
-    'money_home_stake_percentage': MONEY_HOME_INFO + '.stakePercentage',
-    'money_home_wager_percentage': MONEY_HOME_INFO + '.wagerPercentage',
-    'money_home_won': MONEY_HOME_INFO + '.isCorrect',
+    'money_two_odds': MONEY_TWO_INFO + '.americanOdds',
+    'money_two_decimal_odds': MONEY_TWO_INFO + '.decimalOdds',
+    'money_two_stake_percentage': MONEY_TWO_INFO + '.stakePercentage',
+    'money_two_wager_percentage': MONEY_TWO_INFO + '.wagerPercentage',
+    'money_two_won': MONEY_TWO_INFO + '.isCorrect',
+    'money_two_team_id': MONEY_TWO_INFO + '.teamIds[0]',
 
     # spread data
-    'spread_away_points': SPREAD_AWAY_INFO + '.optionDetails[0].value',
-    'spread_away_odds': SPREAD_AWAY_INFO + '.americanOdds',
-    'spread_away_decimal_odds': SPREAD_AWAY_INFO + '.decimalOdds',
-    'spread_away_stake_percentage': SPREAD_AWAY_INFO + ".stakePercentage",
-    'spread_away_wager_percentage': SPREAD_AWAY_INFO + ".wagerPercentage",
-    'spread_away_won': SPREAD_AWAY_INFO + ".isCorrect",
+    'spread_one_points': SPREAD_ONE_INFO + '.optionDetails[0].value',
+    'spread_one_odds': SPREAD_ONE_INFO + '.americanOdds',
+    'spread_one_decimal_odds': SPREAD_ONE_INFO + '.decimalOdds',
+    'spread_one_stake_percentage': SPREAD_ONE_INFO + ".stakePercentage",
+    'spread_one_wager_percentage': SPREAD_ONE_INFO + ".wagerPercentage",
+    'spread_one_won': SPREAD_ONE_INFO + ".isCorrect",
+    'spread_one_team_id': SPREAD_ONE_INFO + '.teamIds[0]',
 
-    'spread_home_points': SPREAD_HOME_INFO + '.optionDetails[0].value',
-    'spread_home_odds': SPREAD_HOME_INFO + '.americanOdds',
-    'spread_home_decimal_odds': SPREAD_HOME_INFO + ".decimalOdds",
-    'spread_home_stake_percentage': SPREAD_HOME_INFO + ".stakePercentage",
-    'spread_home_wager_percentage': SPREAD_HOME_INFO + ".wagerPercentage",
-    'spread_home_won': SPREAD_HOME_INFO + '.isCorrect',
+    'spread_two_points': SPREAD_TWO_INFO + '.optionDetails[0].value',
+    'spread_two_odds': SPREAD_TWO_INFO + '.americanOdds',
+    'spread_two_decimal_odds': SPREAD_TWO_INFO + ".decimalOdds",
+    'spread_two_stake_percentage': SPREAD_TWO_INFO + ".stakePercentage",
+    'spread_two_wager_percentage': SPREAD_TWO_INFO + ".wagerPercentage",
+    'spread_two_won': SPREAD_TWO_INFO + '.isCorrect',
+    'spread_two_team_id': SPREAD_TWO_INFO + '.teamIds[0]',
 }
