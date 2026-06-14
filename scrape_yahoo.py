@@ -167,7 +167,7 @@ class ScrapeYahoo:
         """
         return list(glob.glob(f"{cache_dir}/*.json"))
 
-    def massage_yahoo_data(self, data, drop=False):
+    def massage_yahoo_data(self, data, drop=True):
         """
         sometimes the first team in the 'money' bet section is the home team, sometimes it's the away team.
 
