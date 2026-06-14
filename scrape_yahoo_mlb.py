@@ -13,7 +13,6 @@ class ScrapeYahooMLB(ScrapeYahoo):
         '2026': (datetime.datetime(2026, 3, 25), datetime.datetime(2026, 6, 12)), 
     }
 
-
     def get_yahoo_ids_for_date(self, nice_date):
         """
         fetches date_url and extracts all game ids out of the HTML. expects

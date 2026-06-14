@@ -167,6 +167,39 @@ class ScrapeYahoo:
         """
         return list(glob.glob(f"{cache_dir}/*.json"))
 
+    def massage_yahoo_data(self, data, drop=False):
+        """
+        sometimes the first team in the 'money' bet section is the home team, sometimes it's the away team.
+
+        this does "massaging" -- assign money_home/money_away and spread_home/spread_away to 
+        money_one_*/money_two_* etc based on teamId matching.
+
+        drop controls whether the `*_one_*` and `*_two_*` keys should be deleted.
+        """
+        for bet_type in ["money", "spread"]:
+            if data[f"{bet_type}_one_team_id"] == data['home_team_id']:
+                truth = dict(one='home', two='away')
+            elif data[f"{bet_type}_one_team_id"] == data['away_team_id']:
+                truth = dict(one='away', two='home')
+            else:
+                raise Exception("MASSAGE ERROR")
+
+            old_one_keys = [k for k in data.keys() if k.startswith(f"{bet_type}_one")]
+            mapping = {(k, k.replace(f"{bet_type}_one", f"{bet_type}_{ truth['one'] }")) for k in old_one_keys}
+            for (old_key, new_key) in mapping:
+                data[new_key] = data[old_key]
+                if drop:
+                    del data[old_key]
+
+            old_two_keys = [k for k in data.keys() if k.startswith(f"{bet_type}_two")]
+            mapping = {(k, k.replace(f"{bet_type}_two", f"{bet_type}_{ truth['two'] }")) for k in old_two_keys}
+            for (old_key, new_key) in mapping:
+                data[new_key] = data[old_key]
+                if drop:
+                    del data[old_key]
+
+        return data
+
     def make_dataframe(self, json_filenames):
         """
         For each file in json_filenames, it parses the raw JSON data and applies scrape_rules, then returns
@@ -181,7 +214,8 @@ class ScrapeYahoo:
                 json_data = json.load(f)
             parsed_data = self.parse_yahoo_data(json_data, filename, parsed_rules)
             if parsed_data: # skip if bad/no data from this file
-                dataframes.append(pd.DataFrame({k:[v] for k,v in parsed_data.items()}))
+                massaged = self.massage_yahoo_data(parsed_data)
+                dataframes.append(pd.DataFrame({k:[v] for k,v in massaged.items()}))
 
         return pd.concat(dataframes)
 
