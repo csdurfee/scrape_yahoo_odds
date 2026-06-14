@@ -10,4 +10,5 @@ dependencies = [
     "cloudscraper",
     "jsonpath-ng",
     "pandas",
+    "pytest",
 ]
