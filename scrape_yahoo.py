@@ -155,8 +155,11 @@ class ScrapeYahoo:
                 results = [item.value for item in jsonpath_expression.find(json_data)][0]
                 row[k] = results
             except:
-                print(f"file: {filename} failed on {jsonpath_expression}")
+                self.log_parse_error(filename, jsonpath_expression)
         return row
+    
+    def log_parse_error(self, filename, jsonpath_expression):
+        print(f"file: {filename} failed on {jsonpath_expression}")
 
     def get_cached_filenames(self, cache_dir):
         """
